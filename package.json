@@ -1,0 +1,8 @@
+{
+    "name": "sud-mgp-auth-node",
+    "version": "1.0.0",
+    "private": true,
+    "dependencies": {
+        "jsonwebtoken": "*"
+    }
+}
