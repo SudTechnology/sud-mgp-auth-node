@@ -9,43 +9,47 @@ let SudMGPAuth = function (appId, appSecret) {
     this.appSecret = appSecret;
 }
 
-SudMGPAuth.prototype.getCode = function (uid) {
+SudMGPAuth.prototype.getCode = function (uid, expireDuration) {
     let result = Jwt.getToken({
         app_id: this.appId,
         uid: uid
-    }, this.appSecret);
-    return {code: result.token, expire_date: result.exp};
+    }, this.appSecret, expireDuration);
+    if (result.data) {
+        return {code: result.data.token, expireDate: result.data.exp};
+    } else {
+        return {code: "", expireDate: 0};
+    }
 };
 
-SudMGPAuth.prototype.getSSToken = function (uid) {
-    let result = this.getCode(uid);
-    return {ss_token: result.code, expire_date: result.expire_date};
+SudMGPAuth.prototype.getSSToken = function (uid, expireDuration) {
+    let result = this.getCode(uid, expireDuration);
+    return {token: result.code, expireDate: result.expireDate};
 };
 
 SudMGPAuth.prototype.getUidByCode = function (code) {
-    let claims = Jwt.parseToken(code, this.appSecret);
-    if (!claims) {
-        return {is_success: false};
+    let ret = Jwt.parseToken(code, this.appSecret);
+    if (!ret.isSuccess) {
+        return ret;
     }
-    return {uid: claims.uid, is_success: true};
+    return {isSuccess: ret.isSuccess, errorCode: ret.errorCode, uid: ret.data.uid };
 };
 
 SudMGPAuth.prototype.getUidBySSToken = function (ssToken) {
-    let claims = Jwt.parseToken(ssToken, this.appSecret);
-    if (!claims) {
-        return {is_success: false};
+    let ret = Jwt.parseToken(ssToken, this.appSecret);
+    if (!ret.isSuccess) {
+        return ret;
     }
-    return {uid: claims.uid, is_success: true};
+    return {isSuccess: ret.isSuccess, errorCode: ret.errorCode, uid: ret.data.uid };
 };
 
 SudMGPAuth.prototype.verifyCode = function (code) {
-    let claims = Jwt.parseToken(code, this.appSecret);
-    return claims ? false : true;
+    let ret = Jwt.parseToken(code, this.appSecret);
+    return ret.isSuccess;
 };
 
 SudMGPAuth.prototype.verifySSToken = function (ssToken) {
-    let claims = Jwt.parseToken(ssToken, this.appSecret);
-    return claims ? false : true;
+    let ret = Jwt.parseToken(ssToken, this.appSecret);
+    return ret.isSuccess;
 };
 
 
