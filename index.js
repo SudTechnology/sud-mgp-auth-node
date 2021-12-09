@@ -44,12 +44,12 @@ SudMGPAuth.prototype.getUidBySSToken = function (ssToken) {
 
 SudMGPAuth.prototype.verifyCode = function (code) {
     let ret = Jwt.parseToken(code, this.appSecret);
-    return ret.isSuccess;
+    return ret.errorCode;
 };
 
 SudMGPAuth.prototype.verifySSToken = function (ssToken) {
     let ret = Jwt.parseToken(ssToken, this.appSecret);
-    return ret.isSuccess;
+    return ret.errorCode;
 };
 
 
